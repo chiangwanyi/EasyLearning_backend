@@ -7,10 +7,10 @@ import (
 
 // UserRegisterService 用户注册服务
 type UserRegisterService struct {
-	UserName        string `json:"username" binding:"required,min=3,max=20"`
-	Email           string `json:"email" binding:"required, min=3,max=30"`
-	Password        string `json:"password" binding:"required,min=5,max=30"`
-	PasswordConfirm string `json:"password_confirm" binding:"required,min=5,max=30"`
+	UserName        string `json:"username" binding:"required,min=2,max=20"`
+	Email           string `json:"email" binding:"required,min=3,max=30"`
+	Password        string `json:"password" binding:"required,min=2,max=30"`
+	PasswordConfirm string `json:"password_confirm" binding:"required,min=2,max=30"`
 	Type            string `json:"type" binding:"required"`
 }
 
