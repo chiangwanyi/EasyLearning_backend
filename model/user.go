@@ -9,27 +9,17 @@ import (
 
 // User 用户模型
 type User struct {
-	Id       bson.ObjectId `bson:"_id"`
-	UserName string        `bson:"username"`
-	Password string        `bson:"password"`
-	Email    string        `bson:"email"`
-
-	/*
-		Type 用户类型
-		内容格式：student 或 teacher
-	*/
-	Type string `bson:"type"`
-
-	// ClassList 用户加入的班级
-	ClassList []bson.ObjectId `bson:"classList"`
-
-	// InternalId 学生学号 或 老师工号
-	InternalId string `bson:"internalId"`
-
-	Gender     string    `bson:"gender"`
-	SchoolName string    `bson:"schoolName"`
-	CreatedAt  time.Time `bson:"createdAt"`
-	UpdatedAt  time.Time `bson:"updatedAt"`
+	Id         bson.ObjectId   `bson:"_id"`
+	Username   string          `bson:"username"`
+	Password   string          `bson:"password"`
+	Email      string          `bson:"email"`
+	Type       string          `bson:"type"`
+	ClassList  []bson.ObjectId `bson:"classList"`
+	InternalId string          `bson:"internalId"`
+	Gender     string          `bson:"gender"`
+	SchoolName string          `bson:"schoolName"`
+	CreatedAt  time.Time       `bson:"createdAt"`
+	UpdatedAt  time.Time       `bson:"updatedAt"`
 }
 
 const (

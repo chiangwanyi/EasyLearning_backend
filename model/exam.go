@@ -5,18 +5,17 @@ import (
 	"time"
 )
 
-// Homework 作业模型
-type Homework struct {
-	Id           bson.ObjectId `bson:"_id"`
-	ClassId      bson.ObjectId `bson:"classId"`
-	HomeworkName string        `bson:"homeworkName"`
-	Description  string        `bson:"description"`
-	Deadline     time.Time     `bson:"deadline"`
-	Size         int           `bson:"size"`
-	Score        float64       `bson:"score"`
+// Exam 测试题模型
+type Exam struct {
+	Id          bson.ObjectId `bson:"_id"`
+	ExamName    string        `bson:"examName"`
+	Description string        `bson:"description"`
+	Deadline    time.Time     `bson:"deadline"`
+	Size        int           `bson:"size"`
+	Score       float64       `bson:"score"`
 
 	/*
-		Questions 作业的题目
+		Questions 测试题的题目
 		内容格式：
 		{
 			"content": ["第一题", "第二题", "第三题"]
@@ -25,7 +24,7 @@ type Homework struct {
 	Questions string `bson:"questions"`
 
 	/*
-		Options 作业的选项
+		Options 测试题的选项
 		内容格式：
 		{
 			"content": [{
@@ -40,7 +39,7 @@ type Homework struct {
 	Options string `bson:"options"`
 
 	/*
-		Keys 作业的答案
+		Keys 测试题的答案
 		内容格式：
 		{
 			"content": ["A", "B", "C"]
