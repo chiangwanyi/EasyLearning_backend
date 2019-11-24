@@ -14,23 +14,26 @@ func Router() *gin.Engine {
 	// Cors 跨域访问中间件
 	r.Use(middleware.Cors())
 
-	v1 := r.Group("/api/v1")
+	r.GET("/ping", api.Ping)
+
+	user := r.Group("/api/user")
 	{
-		v1.GET("ping", api.Ping)
 
-		v1.POST("user/register", api.UserRegister)
-		v1.POST("user/login", api.UserLogin)
+		user.POST("register", api.UserRegister)
+		user.POST("login", api.UserLogin)
 
-		auth := v1.Use(middleware.CommonAuthRequired())
+		auth := user.Use(middleware.CommonAuthRequired())
 		{
-			auth.DELETE("user/logout", api.UserLogout)
+			auth.DELETE("logout", api.UserLogout)
 		}
+	}
 
-		auth = v1.Use(middleware.CommonAuthRequired(), middleware.TeacherAuthRequired())
+	class := r.Group("/api/class")
+	{
+		auth := class.Use(middleware.CommonAuthRequired(), middleware.TeacherAuthRequired())
 		{
-			v1.POST("class/add", api.ClassAdd)
+			auth.POST("add", api.ClassAdd)
 		}
-
 	}
 	return r
 }
