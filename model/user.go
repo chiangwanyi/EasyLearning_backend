@@ -15,7 +15,7 @@ type User struct {
 	Email    string        `bson:"email"`
 
 	/*
-		Type 用户的类型
+		Type 用户类型
 		内容格式：student 或 teacher
 	*/
 	Type string `bson:"type"`

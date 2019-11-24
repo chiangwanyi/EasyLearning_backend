@@ -13,7 +13,7 @@ type Homework struct {
 	Description  string        `bson:"description"`
 	Deadline     time.Time     `bson:"deadline"`
 	Size         int           `bson:"size"`
-	Score        int           `bson:"score"`
+	Score        float64       `bson:"score"`
 
 	/*
 		Questions 作业的题目

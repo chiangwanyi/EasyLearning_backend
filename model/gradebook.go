@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Uploaded 上传的作业数据模型
-type Uploaded struct {
+// Gradebook 成绩册模型
+type Gradebook struct {
 	Id         bson.ObjectId `bson:"_id"`
 	ClassId    bson.ObjectId `bson:"classId"`
 	HomeworkId bson.ObjectId `bson:"homeworkId"`
@@ -21,7 +21,7 @@ type Uploaded struct {
 	*/
 	Original string `bson:"original"`
 
-	FinalScore int       `bson:"finalScore"`
+	FinalScore float64   `bson:"finalScore"`
 	CreatedAt  time.Time `bson:"createdAt"`
 	UpdatedAt  time.Time `bson:"updatedAt"`
 }
