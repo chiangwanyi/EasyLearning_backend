@@ -9,14 +9,27 @@ import (
 
 // User 用户模型
 type User struct {
-	Id        bson.ObjectId `bson:"_id"`
-	UserName  string        `bson:"username"`
-	Password  string        `bson:"password"`
-	Email     string        `bson:"email"`
-	Type      string        `bson:"type"`
-	ClassId   string        `bson:"classid"`
-	CreatedAt time.Time     `bson:"createdat"`
-	UpdatedAt time.Time     `bson:"updatedat"`
+	Id       bson.ObjectId `bson:"_id"`
+	UserName string        `bson:"username"`
+	Password string        `bson:"password"`
+	Email    string        `bson:"email"`
+
+	/*
+		Type 用户的类型
+		内容格式：student 或 teacher
+	*/
+	Type string `bson:"type"`
+
+	// ClassList 用户加入的班级
+	ClassList []bson.ObjectId `bson:"classList"`
+
+	// InternalId 学生学号 或 老师工号
+	InternalId string `bson:"internalId"`
+
+	Gender     string    `bson:"gender"`
+	SchoolName string    `bson:"schoolName"`
+	CreatedAt  time.Time `bson:"createdAt"`
+	UpdatedAt  time.Time `bson:"updatedAt"`
 }
 
 const (
@@ -49,7 +62,17 @@ func (user *User) CreateUser() error {
 	user.Id = bson.NewObjectId()
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = user.CreatedAt
-	user.ClassId = "[]"
+
+	user.ClassId = []bson.ObjectId{}
+
+	/*// 测试添加班级功能 (正常)
+	user.ClassId = append(user.ClassId, bson.NewObjectId())
+	user.ClassId = append(user.ClassId, bson.NewObjectId())*/
+
+	user.InternalId = "未设置"
+	user.Gender = "未设置"
+	user.SchoolName = "未设置"
+
 	return client.Insert(user)
 }
 
@@ -91,4 +114,3 @@ func FindUserByUserName(username string) (user User, err error) {
 		return User{}, err
 	}
 }
-
