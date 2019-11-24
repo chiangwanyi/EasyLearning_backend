@@ -12,9 +12,11 @@ func Sessions() gin.HandlerFunc {
 	session := db.MongoSession.Copy()
 
 	client := session.DB("").C("session")
-	store := mongo.NewStore(client, 3600, true, []byte("secret"))
+	store := mongo.NewStore(client, 7*24*60*60, true, []byte("secret"))
 	store.Options(sessions.Options{
 		HttpOnly: true,
+		Path:     "/",
+		MaxAge:   7 * 24 * 60 * 60,
 	})
 	return sessions.Sessions("my_session", store)
 }

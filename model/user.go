@@ -53,7 +53,7 @@ func (user *User) CreateUser() error {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = user.CreatedAt
 
-	user.ClassId = []bson.ObjectId{}
+	user.ClassList = []bson.ObjectId{}
 
 	/*// 测试添加班级功能 (正常)
 	user.ClassId = append(user.ClassId, bson.NewObjectId())
@@ -92,8 +92,8 @@ func FindUserByEmail(email string) (user User, err error) {
 	}
 }
 
-// FindUserByUserName 通过 UserName 查找用户
-func FindUserByUserName(username string) (user User, err error) {
+// FindUserByUserName 通过 Username 查找用户
+func FindUserByUsername(username string) (user User, err error) {
 	session := db.MongoSession.Copy()
 	defer session.Close()
 	client := session.DB("").C("user")

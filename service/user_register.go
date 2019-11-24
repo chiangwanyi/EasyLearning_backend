@@ -37,7 +37,7 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 // Register 用户注册
 func (service *UserRegisterService) Register() (model.User, *serializer.Response) {
 	user := model.User{
-		UserName: service.UserName,
+		Username: service.UserName,
 		Email:    service.Email,
 		Type:     service.Type,
 	}

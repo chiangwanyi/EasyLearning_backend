@@ -13,17 +13,6 @@ import (
 func UserLogout(c *gin.Context) {
 	session := sessions.Default(c)
 
-	// 再次确认 UserId 是否存在
-	uid := session.Get(config.SessionUserId)
-	if uid == nil {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Data:  nil,
-			Msg:   "",
-			Error: "没有登出权限",
-		})
-		return
-	}
-
 	// 删除 UserId
 	session.Delete(config.SessionUserId)
 	// 删除 ClassId
