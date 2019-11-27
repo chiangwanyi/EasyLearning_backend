@@ -29,6 +29,12 @@ func Router() *gin.Engine {
 		// 需要登录权限
 		auth := user.Use(middleware.CommonAuthRequired())
 		{
+			// 用户主页
+			auth.GET("home", api.UserHome)
+
+			// 用户加入的班级
+			auth.GET("showClass", api.ShowClass)
+
 			// 用户登出
 			auth.DELETE("logout", api.UserLogout)
 

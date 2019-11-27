@@ -17,7 +17,7 @@ func CommonAuthRequired() gin.HandlerFunc {
 		// 检查 UserId 是否存在
 		uid := session.Get(config.SessionUserId)
 		if uid == nil {
-			c.JSON(http.StatusBadRequest, serializer.Response{
+			c.JSON(http.StatusOK, serializer.Response{
 				Status: serializer.BadAuthError,
 				Error:  "没有权限",
 			})
@@ -36,7 +36,7 @@ func TeacherAuthRequired() gin.HandlerFunc {
 		uid := session.Get(config.SessionUserId)
 		user, err := model.FindUserById(uid.(string))
 		if err != nil || user.Type != "teacher" {
-			c.JSON(http.StatusBadRequest, serializer.Response{
+			c.JSON(http.StatusOK, serializer.Response{
 				Status: serializer.BadAuthError,
 				Error:  "没有老师权限",
 			})

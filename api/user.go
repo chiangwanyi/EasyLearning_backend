@@ -2,6 +2,7 @@ package api
 
 import (
 	"easy_learning/config"
+	"easy_learning/model"
 	"easy_learning/serializer"
 	"easy_learning/service"
 	"github.com/gin-contrib/sessions"
@@ -9,12 +10,35 @@ import (
 	"net/http"
 )
 
-// CurrentUser 返回当前登录的用户接口
-func CurrentUser(c *gin.Context) {
+// UserHome 用户主页接口
+func UserHome(c *gin.Context) {
+	session := sessions.Default(c)
+
+	uid := session.Get(config.SessionUserId).(string)
+	if user, err := model.FindUserById(uid); err == nil {
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.OK,
+			Data:   serializer.BuildUser(user),
+			Msg:    "获取当前用户信息成功",
+			Error:  "",
+		})
+	} else {
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.InternalServerError,
+			Data:   err,
+			Msg:    "",
+			Error:  "未找到用户，内部错误",
+		})
+	}
+	return
+}
+
+// ShowClass 显示用户加入的班级接口
+func ShowClass(c *gin.Context) {
 
 }
 
-// JoinClass 加入班级接口
+// UserJoinClass 加入班级接口
 func UserJoinClass(c *gin.Context) {
 	var s service.UserJoinClassService
 
@@ -92,6 +116,9 @@ func UserLogin(c *gin.Context) {
 				})
 				return
 			}
+			c.Header("Access-Control-Allow-Credentials", "true")
+			c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+			c.Header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
 			c.JSON(http.StatusOK, serializer.Response{
 				Status: serializer.OK,
 				Data:   serializer.BuildUser(user),
