@@ -9,6 +9,37 @@ import (
 	"net/http"
 )
 
+// CurrentUser 返回当前登录的用户接口
+func CurrentUser(c *gin.Context) {
+
+}
+
+// JoinClass 加入班级接口
+func UserJoinClass(c *gin.Context) {
+	var s service.UserJoinClassService
+
+	if err := c.ShouldBindJSON(&s); err == nil {
+		session := sessions.Default(c)
+		if err := s.JoinClass(session.Get(config.SessionUserId).(string)); err != nil {
+			c.JSON(http.StatusOK, err)
+			return
+		}
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.OK,
+			Data:   nil,
+			Msg:    "加入班级成功",
+			Error:  "",
+		})
+	} else {
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.BadRequestError,
+			Data:   err,
+			Msg:    "",
+			Error:  "输入数据不匹配",
+		})
+	}
+}
+
 // UserLogout 用户登出接口
 func UserLogout(c *gin.Context) {
 	session := sessions.Default(c)
@@ -20,17 +51,19 @@ func UserLogout(c *gin.Context) {
 
 	// 保存 Session
 	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, serializer.Response{
-			Data:  err,
-			Msg:   "",
-			Error: "保存 Session 失败",
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.InternalServerError,
+			Data:   err,
+			Msg:    "",
+			Error:  "保存 Session 失败",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, serializer.Response{
-		Data:  nil,
-		Msg:   "登出成功",
-		Error: "",
+		Status: serializer.OK,
+		Data:   nil,
+		Msg:    "登出成功",
+		Error:  "",
 	})
 }
 
@@ -52,25 +85,28 @@ func UserLogin(c *gin.Context) {
 			session.Set(config.SessionClassId, "")
 
 			if err := session.Save(); err != nil {
-				c.JSON(http.StatusInternalServerError, serializer.Response{
-					Data:  err,
-					Error: "保存 Session 失败",
+				c.JSON(http.StatusOK, serializer.Response{
+					Status: serializer.InternalServerError,
+					Data:   err,
+					Error:  "保存 Session 失败",
 				})
 				return
 			}
 			c.JSON(http.StatusOK, serializer.Response{
-				Data:  serializer.BuildUser(user),
-				Msg:   "登录成功",
-				Error: "",
+				Status: serializer.OK,
+				Data:   serializer.BuildUser(user),
+				Msg:    "登录成功",
+				Error:  "",
 			})
 		} else {
-			c.JSON(http.StatusBadRequest, err)
+			c.JSON(http.StatusOK, err)
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Data:  err,
-			Msg:   "",
-			Error: "输入数据不匹配",
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.BadRequestError,
+			Data:   err,
+			Msg:    "",
+			Error:  "输入数据不匹配",
 		})
 	}
 }
@@ -83,19 +119,21 @@ func UserRegister(c *gin.Context) {
 	if err := c.ShouldBindJSON(&s); err == nil {
 		// 注册
 		if user, err := s.Register(); err != nil {
-			c.JSON(http.StatusBadRequest, err)
+			c.JSON(http.StatusOK, err)
 		} else {
 			c.JSON(http.StatusOK, serializer.Response{
-				Data:  serializer.BuildUser(user),
-				Msg:   "注册成功",
-				Error: "",
+				Status: serializer.OK,
+				Data:   serializer.BuildUser(user),
+				Msg:    "注册成功",
+				Error:  "",
 			})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Data:  err,
-			Msg:   "",
-			Error: "输入数据不匹配",
+		c.JSON(http.StatusOK, serializer.Response{
+			Status: serializer.BadRequestError,
+			Data:   err,
+			Msg:    "",
+			Error:  "输入数据格式不匹配",
 		})
 	}
 }

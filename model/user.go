@@ -104,3 +104,15 @@ func FindUserByUsername(username string) (user User, err error) {
 		return User{}, err
 	}
 }
+
+// InsertUserClassList 通过 Uid 插入 classId
+func InsertUserClassList(uid string, cid string) (err error) {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("user")
+
+	selector := bson.M{"_id": bson.ObjectIdHex(uid)}
+	update := bson.M{"$push": bson.M{"classList": bson.ObjectIdHex(cid)}}
+	err = client.Update(selector, update)
+	return err
+}

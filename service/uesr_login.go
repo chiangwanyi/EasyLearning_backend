@@ -20,16 +20,18 @@ func (service *UserLoginService) Login() (model.User, *serializer.Response) {
 			return user, nil
 		} else {
 			return model.User{}, &serializer.Response{
-				Data:  nil,
-				Msg:   "",
-				Error: "密码错误",
+				Status: serializer.NotMatchError,
+				Data:   nil,
+				Msg:    "",
+				Error:  "密码错误",
 			}
 		}
 	} else {
 		return model.User{}, &serializer.Response{
-			Data:  err,
-			Msg:   "",
-			Error: "查询结果为空",
+			Status: serializer.NotFoundError,
+			Data:   err,
+			Msg:    "",
+			Error:  "查询结果为空",
 		}
 	}
 }

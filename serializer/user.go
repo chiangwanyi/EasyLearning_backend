@@ -8,7 +8,7 @@ import (
 // User 用户序列化器
 type User struct {
 	Id        string    `json:"id"`
-	UserName  string    `json:"user_name"`
+	UserName  string    `json:"username"`
 	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"created_at"`
 }

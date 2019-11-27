@@ -9,6 +9,7 @@ import (
 // Ping 服务器运行状态检查接口
 func Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, serializer.Response{
+		Status: serializer.OK,
 		Data: gin.H{
 			"msg": "pong",
 		},

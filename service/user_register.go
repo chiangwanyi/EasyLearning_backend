@@ -3,6 +3,7 @@ package service
 import (
 	"easy_learning/model"
 	"easy_learning/serializer"
+	"regexp"
 )
 
 // UserRegisterService 用户注册服务
@@ -16,19 +17,33 @@ type UserRegisterService struct {
 
 // Valid 处理非法
 func (service *UserRegisterService) Valid() *serializer.Response {
+
+	// 检查邮箱格式是否正确
+	pattern := `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`
+	reg := regexp.MustCompile(pattern)
+	if !reg.MatchString(service.Email) {
+		return &serializer.Response{
+			Status: serializer.BadRequestError,
+			Msg:    "",
+			Error:  "邮箱格式不正确",
+		}
+	}
+
 	if service.Password != service.PasswordConfirm {
 		return &serializer.Response{
-			Msg:   "",
-			Error: "两次输入的密码不匹配",
+			Status: serializer.BadRequestError,
+			Msg:    "",
+			Error:  "两次输入的密码不匹配",
 		}
 	}
 
 	// FindUserByEmail 查找邮箱是否重复
 	if user, err := model.FindUserByEmail(service.Email); err == nil {
 		return &serializer.Response{
-			Data:  serializer.BuildUser(user),
-			Msg:   "",
-			Error: "邮箱已存在",
+			Status: serializer.BadRequestError,
+			Data:   serializer.BuildUser(user),
+			Msg:    "",
+			Error:  "邮箱已存在",
 		}
 	}
 	return nil
@@ -50,18 +65,20 @@ func (service *UserRegisterService) Register() (model.User, *serializer.Response
 	// 生成加密密码
 	if err := user.SetPassword(service.Password); err != nil {
 		return user, &serializer.Response{
-			Data:  err,
-			Msg:   "",
-			Error: "密码加密失败",
+			Status: serializer.InternalServerError,
+			Data:   err,
+			Msg:    "",
+			Error:  "密码加密失败",
 		}
 	}
 
 	// 创建用户
 	if err := user.CreateUser(); err != nil {
 		return user, &serializer.Response{
-			Data:  err,
-			Msg:   "",
-			Error: "注册失败",
+			Status: serializer.InternalServerError,
+			Data:   err,
+			Msg:    "",
+			Error:  "注册失败",
 		}
 	}
 
