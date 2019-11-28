@@ -46,3 +46,22 @@ func TeacherAuthRequired() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// StudentAuthRequired 检查学生权限
+func StudentAuthRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+
+		uid := session.Get(config.SessionUserId)
+		user, err := model.FindUserById(uid.(string))
+		if err != nil || user.Type != "student" {
+			c.JSON(http.StatusOK, serializer.Response{
+				Status: serializer.BadAuthError,
+				Error:  "没有学生权限",
+			})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

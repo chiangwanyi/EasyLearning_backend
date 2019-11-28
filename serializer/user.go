@@ -19,6 +19,17 @@ type User struct {
 	CreatedAt  time.Time       `json:"created_at"`
 }
 
+// UserHome 用户首页序列化器
+type UserHome struct {
+	Id               string `json:"id"`
+	Username         string `json:"username"`
+	Email            string `json:"email"`
+	Type             string `json:"type"`
+	TeacherName      string `json:"teacher_name"`
+	Classname        string `json:"classname"`
+	ClassDescription string `json:"class_description"`
+}
+
 // BuildUser 序列化用户
 func BuildUser(user model.User) User {
 	return User{
@@ -31,5 +42,18 @@ func BuildUser(user model.User) User {
 		Gender:     user.Gender,
 		SchoolName: user.SchoolName,
 		CreatedAt:  user.CreatedAt,
+	}
+}
+
+func BuildUserHome(user model.User, class model.Class) UserHome {
+	teacher, _ := model.FindUserById(class.TeacherId.Hex())
+	return UserHome{
+		Id:               user.Id.Hex(),
+		Username:         user.Username,
+		Email:            user.Email,
+		Type:             user.Type,
+		TeacherName:      teacher.Username,
+		Classname:        class.Classname,
+		ClassDescription: class.Description,
 	}
 }

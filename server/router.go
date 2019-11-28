@@ -32,14 +32,20 @@ func Router() *gin.Engine {
 			// 用户主页
 			auth.GET("home", api.UserHome)
 
-			// 用户加入的班级
-			auth.GET("showClass", api.ShowClass)
-
 			// 用户登出
 			auth.DELETE("logout", api.UserLogout)
 
-			// 用户加入班级
-			auth.PUT("joinClass", api.UserJoinClass)
+			auth.POST("setCurrentClass", api.UserSetCurrentClass)
+
+			// 需要学生权限
+			student := auth.Use(middleware.StudentAuthRequired())
+			{
+				// 显示学生加入的班级
+				student.GET("showClass", api.ShowStudentClassList)
+
+				// 学生加入班级
+				student.PUT("joinClass", api.StudentJoinClass)
+			}
 		}
 	}
 

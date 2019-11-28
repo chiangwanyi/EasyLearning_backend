@@ -5,6 +5,7 @@ import (
 	"easy_learning/model"
 	"easy_learning/serializer"
 	"easy_learning/service"
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -14,14 +15,31 @@ import (
 func UserHome(c *gin.Context) {
 	session := sessions.Default(c)
 
-	uid := session.Get(config.SessionUserId).(string)
-	if user, err := model.FindUserById(uid); err == nil {
+	fmt.Println(session.Get(config.SessionUserId))
+	fmt.Println(session.Get(config.SessionClassId))
+
+	if session.Get(config.SessionClassId) == nil {
 		c.JSON(http.StatusOK, serializer.Response{
-			Status: serializer.OK,
-			Data:   serializer.BuildUser(user),
-			Msg:    "获取当前用户信息成功",
-			Error:  "",
+			Status: serializer.BadRequestError,
+			Data:   nil,
+			Msg:    "",
+			Error:  "未设置当前课程",
 		})
+		return
+	}
+
+	uid := session.Get(config.SessionUserId).(string)
+	cid := session.Get(config.SessionClassId).(string)
+
+	if user, err := model.FindUserById(uid); err == nil {
+		if class, err := model.FindClassById(cid); err == nil {
+			c.JSON(http.StatusOK, serializer.Response{
+				Status: serializer.OK,
+				Data:   serializer.BuildUserHome(user, class),
+				Msg:    "获取当前用户信息成功",
+				Error:  "",
+			})
+		}
 	} else {
 		c.JSON(http.StatusOK, serializer.Response{
 			Status: serializer.InternalServerError,
@@ -33,25 +51,28 @@ func UserHome(c *gin.Context) {
 	return
 }
 
-// ShowClass 显示用户加入的班级接口
-func ShowClass(c *gin.Context) {
+// UserSetCurrentClass 用户设置当前班级接口
+func UserSetCurrentClass(c *gin.Context) {
 
-}
-
-// UserJoinClass 加入班级接口
-func UserJoinClass(c *gin.Context) {
-	var s service.UserJoinClassService
+	s := service.UserSetCurrentClassService{}
 
 	if err := c.ShouldBindJSON(&s); err == nil {
+		classId := s.SetCurrentClass()
+
 		session := sessions.Default(c)
-		if err := s.JoinClass(session.Get(config.SessionUserId).(string)); err != nil {
-			c.JSON(http.StatusOK, err)
+		session.Set(config.SessionClassId, classId)
+		if err := session.Save(); err != nil {
+			c.JSON(http.StatusOK, serializer.Response{
+				Status: serializer.InternalServerError,
+				Data:   err,
+				Error:  "保存 Session 失败",
+			})
 			return
 		}
 		c.JSON(http.StatusOK, serializer.Response{
 			Status: serializer.OK,
 			Data:   nil,
-			Msg:    "加入班级成功",
+			Msg:    "设置课程成功",
 			Error:  "",
 		})
 	} else {
@@ -116,9 +137,6 @@ func UserLogin(c *gin.Context) {
 				})
 				return
 			}
-			c.Header("Access-Control-Allow-Credentials", "true")
-			c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
-			c.Header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
 			c.JSON(http.StatusOK, serializer.Response{
 				Status: serializer.OK,
 				Data:   serializer.BuildUser(user),

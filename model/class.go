@@ -35,6 +35,19 @@ func (class *Class) CreateClass() error {
 	return client.Insert(class)
 }
 
+// FindClassById 通过 Id 查找班级
+func FindClassById(id string) (class Class, err error) {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("class")
+
+	if err = client.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&class); err == nil {
+		return class, nil
+	} else {
+		return Class{}, err
+	}
+}
+
 // FindClassByClassname 通过 Classname 查找班级
 func FindClassByClassname(classname string) (class Class, err error) {
 	session := db.MongoSession.Copy()
