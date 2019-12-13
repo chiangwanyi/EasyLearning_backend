@@ -59,8 +59,6 @@ func (user *User) CreateUser() error {
 	user.ClassId = append(user.ClassId, bson.NewObjectId())
 	user.ClassId = append(user.ClassId, bson.NewObjectId())*/
 
-	user.InternalId = "未设置"
-	user.Gender = "未设置"
 	user.SchoolName = "未设置"
 
 	return client.Insert(user)
@@ -105,6 +103,18 @@ func FindUserByUsername(username string) (user User, err error) {
 	}
 }
 
+func ShowAllStudent() (student []User, err error) {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("user")
+
+	if err = client.Find(bson.M{"type": "student"}).All(&student); err == nil {
+		return student, nil
+	} else {
+		return []User{}, err
+	}
+}
+
 // InsertUserClassList 通过 Uid 插入 classId
 func InsertUserClassList(uid string, cid string) (err error) {
 	session := db.MongoSession.Copy()
@@ -112,7 +122,7 @@ func InsertUserClassList(uid string, cid string) (err error) {
 	client := session.DB("").C("user")
 
 	selector := bson.M{"_id": bson.ObjectIdHex(uid)}
-	update := bson.M{"$push": bson.M{"classList": bson.ObjectIdHex(cid)}}
+	update := bson.M{"$addToSet": bson.M{"classList": bson.ObjectIdHex(cid)}}
 	err = client.Update(selector, update)
 	return err
 }

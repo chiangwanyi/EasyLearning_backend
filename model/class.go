@@ -2,6 +2,7 @@ package model
 
 import (
 	"easy_learning/db"
+	"errors"
 	"github.com/globalsign/mgo/bson"
 	"time"
 )
@@ -40,7 +41,9 @@ func FindClassById(id string) (class Class, err error) {
 	session := db.MongoSession.Copy()
 	defer session.Close()
 	client := session.DB("").C("class")
-
+	if !bson.IsObjectIdHex(id) {
+		return Class{}, errors.New("error")
+	}
 	if err = client.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&class); err == nil {
 		return class, nil
 	} else {
@@ -59,4 +62,17 @@ func FindClassByClassname(classname string) (class Class, err error) {
 	} else {
 		return Class{}, err
 	}
+}
+
+// InsertStudentList
+func InsertStudentList(uid string, cid string) (err error) {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("class")
+
+
+	selector := bson.M{"_id": bson.ObjectIdHex(cid)}
+	update := bson.M{"$addToSet": bson.M{"studentList": bson.ObjectIdHex(uid)}}
+	err = client.Update(selector, update)
+	return err
 }

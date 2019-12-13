@@ -28,6 +28,7 @@ type UserHome struct {
 	TeacherName      string `json:"teacher_name"`
 	Classname        string `json:"classname"`
 	ClassDescription string `json:"class_description"`
+	Gender           string `json:"gender"`
 }
 
 // BuildUser 序列化用户
@@ -45,12 +46,20 @@ func BuildUser(user model.User) User {
 	}
 }
 
+func BuildStudents(items []model.User) (list []User) {
+	for _, val := range items {
+		list = append(list, BuildUser(val))
+	}
+	return list
+}
+
 func BuildUserHome(user model.User, class model.Class) UserHome {
 	teacher, _ := model.FindUserById(class.TeacherId.Hex())
 	return UserHome{
 		Id:               user.Id.Hex(),
 		Username:         user.Username,
 		Email:            user.Email,
+		Gender:           user.Gender,
 		Type:             user.Type,
 		TeacherName:      teacher.Username,
 		Classname:        class.Classname,

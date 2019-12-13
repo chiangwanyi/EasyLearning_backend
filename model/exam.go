@@ -1,6 +1,7 @@
 package model
 
 import (
+	"easy_learning/db"
 	"github.com/globalsign/mgo/bson"
 	"time"
 )
@@ -49,4 +50,40 @@ type Exam struct {
 
 	CreatedAt time.Time `bson:"createdAt"`
 	UpdatedAt time.Time `bson:"updatedAt"`
+}
+
+func (exam *Exam) CreateExam() error {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("exam")
+
+	exam.Id = bson.NewObjectId()
+	exam.CreatedAt = time.Now()
+	exam.UpdatedAt = exam.CreatedAt
+
+	return client.Insert(exam)
+}
+
+func FindExamById(id string) (exam Exam, err error) {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("exam")
+
+	if err = client.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&exam); err == nil {
+		return exam, nil
+	} else {
+		return Exam{}, err
+	}
+}
+
+func ShowAllExam() (examlist []Exam, err error) {
+	session := db.MongoSession.Copy()
+	defer session.Close()
+	client := session.DB("").C("exam")
+
+	if err = client.Find(bson.M{}).All(&examlist); err == nil {
+		return examlist, nil
+	} else {
+		return []Exam{}, err
+	}
 }

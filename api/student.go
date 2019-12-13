@@ -43,3 +43,10 @@ func StudentJoinClass(c *gin.Context) {
 		})
 	}
 }
+
+func ShowAllStudent(c *gin.Context) {
+	var s service.ShowStudentListService
+
+	res := s.ShowStudentList()
+	c.JSON(http.StatusOK, res)
+}

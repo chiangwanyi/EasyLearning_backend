@@ -9,9 +9,11 @@ import (
 // UserRegisterService 用户注册服务
 type UserRegisterService struct {
 	UserName        string `json:"username" binding:"required,min=2,max=20"`
+	InternalId      string `json:"internal_id" binding:"required"`
 	Email           string `json:"email" binding:"required,min=3,max=30"`
 	Password        string `json:"password" binding:"required,min=2,max=30"`
 	PasswordConfirm string `json:"password_confirm" binding:"required,min=2,max=30"`
+	Gender          string `json:"gender" binding:"required"`
 	Type            string `json:"type" binding:"required"`
 }
 
@@ -52,9 +54,11 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 // Register 用户注册
 func (service *UserRegisterService) Register() (model.User, *serializer.Response) {
 	user := model.User{
-		Username: service.UserName,
-		Email:    service.Email,
-		Type:     service.Type,
+		Username:   service.UserName,
+		InternalId: service.InternalId,
+		Email:      service.Email,
+		Gender:     service.Gender,
+		Type:       service.Type,
 	}
 
 	// 判断输入数据是否合法

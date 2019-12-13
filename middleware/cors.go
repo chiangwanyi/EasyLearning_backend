@@ -7,10 +7,11 @@ import (
 
 // Cors 跨域配置
 func Cors() gin.HandlerFunc {
-	config := cors.DefaultConfig()
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
-	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Cookie"}
-	config.AllowOrigins = []string{"http://localhost:3000"}
-	config.AllowCredentials = true
+	config := cors.Config{
+		AllowCredentials: true,
+		AllowOrigins:     []string{"http://192.168.1.156:3000", "http://localhost:3000"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Cookie", ""},
+	}
 	return cors.New(config)
 }

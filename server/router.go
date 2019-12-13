@@ -45,6 +45,8 @@ func Router() *gin.Engine {
 
 				// 学生加入班级
 				student.PUT("joinClass", api.StudentJoinClass)
+
+				student.GET("students", api.ShowAllStudent)
 			}
 		}
 	}
@@ -57,6 +59,37 @@ func Router() *gin.Engine {
 		{
 			// 老师添加班级
 			auth.POST("create", api.CreateClass)
+		}
+	}
+
+	exam := r.Group("/api")
+	{
+
+		exam.GET("exams/list", api.ShowExamList)
+
+		exam.GET("exam/:id", api.ShowExam)
+
+		auth := exam.Use(middleware.CommonAuthRequired(), middleware.TeacherAuthRequired())
+		{
+			auth.POST("exams/create", api.CreateExam)
+		}
+	}
+
+	grade := r.Group("/api")
+	{
+		auth := grade.Use(middleware.CommonAuthRequired())
+		{
+			auth.POST("grade/calc", api.CalculateGrade)
+			auth.GET("grades", api.ShowGradeList)
+		}
+	}
+
+	broadcast := r.Group("/api")
+	{
+		auth := broadcast.Use(middleware.CommonAuthRequired())
+		{
+			auth.POST("broadcast", api.CreateBroadcast)
+			auth.GET("broadcasts", api.ShowAllBroadcast)
 		}
 	}
 	return r
